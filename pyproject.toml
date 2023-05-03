@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "projekt"
+version = "0.1.0"
+description = ""
+authors = ["Filip Juza <filip.juza.2000@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+opencv-python = "^4.7.0.72"
+emd = {git = "https://gitlab.com/emd-dev/emd.git"}
+scipy = "^1.10.1"
+librosa = "^0.10.0.post2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
