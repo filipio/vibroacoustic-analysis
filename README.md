@@ -1,3 +1,5 @@
+# vibroacoustic-analysis
+
 ## Requirements
 - poetry installed
 - python >= 3.10, <3.12
