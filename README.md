@@ -7,4 +7,5 @@ Note : To make everything work properly, make sure that you downloaded and place
 - python >= 3.10, <3.12
 
 ## Setup
-Use environment from `poetry.lock` file
+- Use environment from `poetry.lock` file
+- Run `pre-commit install` to run hooks before each commit
