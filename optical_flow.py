@@ -10,7 +10,7 @@ color = np.random.randint(0, 255, (100, 3))
 ret, old_frame = cap.read()
 cv.imshow("image", old_frame)
 old_gray = cv.cvtColor(old_frame, cv.COLOR_BGR2GRAY)
-start_point = [51.0, 200.0]  # x and y
+start_point = [51.0, 200.0]
 p0 = np.array([[start_point]]).astype(np.float32)
 
 mask = np.zeros_like(old_frame)
