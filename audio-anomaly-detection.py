@@ -31,12 +31,25 @@ def load_audio_data(path):
     return y
 
 
+def extract_audio_peak_part():
+    audio = load_audio_data(AUDIO_PATH)
+    audio_clean = audio[CLEAN_AUDIO_CUTOFF_INDEX:-CLEAN_AUDIO_CUTOFF_INDEX]
+    peak_index = np.argmax(audio_clean)
+    original_peak_index = CLEAN_AUDIO_CUTOFF_INDEX + peak_index
+    result = audio[
+        original_peak_index
+        - AUDIO_PEAK_INDEX_BOUNDARY : original_peak_index
+        + AUDIO_PEAK_INDEX_BOUNDARY
+    ]
+    return result
+
+
 def plot_audio(signal):
     librosa.display.waveshow(signal, sr=SIGNAL_SAMPLING)
     plt.show()
 
 
-def save_scores(path, dataset, scores):
+def save_anomaly_scores(path, dataset, scores):
     data, label, date, _ = dataset.data, dataset.label, dataset.date, dataset.features
     fig = plot(
         data=data, scores=scores, date=date, features=["original_audio"], label=label
@@ -46,18 +59,11 @@ def save_scores(path, dataset, scores):
 
 
 def main():
-    audio = load_audio_data(AUDIO_PATH)
+
     if not os.path.exists(RESULTS_PATH):
         os.mkdir(RESULTS_PATH)
 
-    audio_clean = audio[CLEAN_AUDIO_CUTOFF_INDEX:-CLEAN_AUDIO_CUTOFF_INDEX]
-    peak_index = np.argmax(audio_clean)
-    original_peak_index = CLEAN_AUDIO_CUTOFF_INDEX + peak_index
-    peak_audio = audio[
-        original_peak_index
-        - AUDIO_PEAK_INDEX_BOUNDARY : original_peak_index
-        + AUDIO_PEAK_INDEX_BOUNDARY
-    ]
+    peak_audio = extract_audio_peak_part()
 
     models = [
         SpotDetector(),
@@ -91,8 +97,8 @@ def main():
             RESULTS_PATH, model_name + "_calibrated" + SAVE_FILE_FORMAT
         )
 
-        save_scores(path=model_results_path, dataset=ds, scores=scores)
-        save_scores(
+        save_anomaly_scores(path=model_results_path, dataset=ds, scores=scores)
+        save_anomaly_scores(
             path=calibrated_model_results_path, dataset=ds, scores=scores_calibrated
         )
 
