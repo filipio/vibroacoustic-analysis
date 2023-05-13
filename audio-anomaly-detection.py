@@ -16,23 +16,25 @@ from streamad.process import ZScoreCalibrator
 from streamad.util import CustomDS, StreamGenerator, plot
 
 SIGNAL_SAMPLING = 44_500
+# about 0.5s is cut of from start/end of audio
 CLEAN_AUDIO_CUTOFF_INDEX = int(SIGNAL_SAMPLING / 2)
 AUDIO_PEAK_INDEX_BOUNDARY = 300
 AUDIO_PATH = (
-    "../data/audio(wideo)/non_animal/D_non-contrast_1/D_non-contrast_1/REC70.WAV"
+    "../data/audio(wideo)/non_animal/D_non-contrast_1/D_non-contrast_1/REC69.WAV"
 )
-RESULTS_PATH = "./anomaly_detection_results"
+RESULTS_PATH = os.path.join(
+    "./anomaly_detection_results", AUDIO_PATH.split("/")[-1][:-4]
+)
 SAVE_FILE_FORMAT = ".svg"
 
 
-def load_audio_data(path):
-    y, _ = librosa.load(path, sr=SIGNAL_SAMPLING)
+def load_audio_data():
+    y, _ = librosa.load(AUDIO_PATH, sr=SIGNAL_SAMPLING)
     print("audio data loaded, len: ", len(y))
     return y
 
 
-def extract_audio_peak_part():
-    audio = load_audio_data(AUDIO_PATH)
+def extract_audio_peak_part(audio):
     audio_clean = audio[CLEAN_AUDIO_CUTOFF_INDEX:-CLEAN_AUDIO_CUTOFF_INDEX]
     peak_index = np.argmax(audio_clean)
     original_peak_index = CLEAN_AUDIO_CUTOFF_INDEX + peak_index
@@ -44,8 +46,14 @@ def extract_audio_peak_part():
     return result
 
 
-def plot_audio(signal):
+def plot_wave(signal):
     librosa.display.waveshow(signal, sr=SIGNAL_SAMPLING)
+    plt.show()
+
+
+def plot_audio(signal):
+    plt.figure()
+    plt.plot(signal, label="audio")
     plt.show()
 
 
@@ -63,7 +71,8 @@ def main():
     if not os.path.exists(RESULTS_PATH):
         os.mkdir(RESULTS_PATH)
 
-    peak_audio = extract_audio_peak_part()
+    audio = load_audio_data()
+    peak_audio = extract_audio_peak_part(audio)
 
     models = [
         SpotDetector(),
