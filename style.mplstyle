@@ -1,0 +1,31 @@
+text.color: white
+axes.labelcolor: white
+legend.frameon: False
+legend.numpoints: 1
+legend.scatterpoints: 1
+xtick.direction: out
+ytick.direction: out
+xtick.color: white
+ytick.color: white
+axes.axisbelow: True
+font.family: monospace
+grid.linestyle: -
+lines.solid_capstyle: round
+
+# Seaborn darkgrid parameters
+axes.grid: True
+axes.facecolor: 1F1F1F
+axes.edgecolor: 1F1F1F
+axes.linewidth: 0
+grid.color: 2F2F2F
+xtick.major.size: 0
+ytick.major.size: 0
+xtick.minor.size: 0
+ytick.minor.size: 0
+
+# Custom
+font.sans-serif: Overpass, Helvetica, Helvetica Neue, Arial, Liberation Sans, DejaVu Sans, Bitstream Vera Sans, sans-serif
+axes.prop_cycle: cycler('color', ['7A76C2', 'ff6e9c98', 'f62196', '18c0c4', 'f3907e', '66E9EC'])
+image.cmap: RdPu
+figure.facecolor: 1F1F1F
+savefig.facecolor: 1F1F1F
