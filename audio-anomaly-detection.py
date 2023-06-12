@@ -15,17 +15,19 @@ from streamad.model import (
 from streamad.process import ZScoreCalibrator
 from streamad.util import CustomDS, StreamGenerator, plot
 
+plt.style.use("./style.mplstyle")
+
 SIGNAL_SAMPLING = 44_500
 # about 0.5s is cut of from start/end of audio
 CLEAN_AUDIO_CUTOFF_INDEX = int(SIGNAL_SAMPLING / 2)
-AUDIO_PEAK_INDEX_BOUNDARY = 300
+AUDIO_PEAK_INDEX_BOUNDARY = 1000
 AUDIO_PATH = (
     "../data/audio(wideo)/non_animal/D_non-contrast_1/D_non-contrast_1/REC69.WAV"
 )
 RESULTS_PATH = os.path.join(
     "./anomaly_detection_results", AUDIO_PATH.split("/")[-1][:-4]
 )
-SAVE_FILE_FORMAT = ".svg"
+SAVE_FILE_FORMAT = ".pdf"
 
 
 def load_audio_data():
@@ -53,7 +55,9 @@ def plot_wave(signal):
 
 def plot_audio(signal):
     plt.figure()
-    plt.plot(signal, label="audio")
+    plt.plot(signal, label="VAS")
+    plt.ylabel("value")
+    plt.legend()
     plt.show()
 
 
@@ -73,6 +77,7 @@ def main():
 
     audio = load_audio_data()
     peak_audio = extract_audio_peak_part(audio)
+    plot_audio(peak_audio)
 
     models = [
         SpotDetector(),
