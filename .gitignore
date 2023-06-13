@@ -2,3 +2,4 @@
 .vscode
 *_results
 .idea
+.ipynb_checkpoints
