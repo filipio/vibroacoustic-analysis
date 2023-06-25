@@ -12,7 +12,7 @@ from streamad.model import (
     SpotDetector,
     SRDetector,
 )
-from streamad.process import ZScoreCalibrator
+from streamad.process import WeightEnsemble, ZScoreCalibrator
 from streamad.util import CustomDS, StreamGenerator, plot
 
 plt.style.use("./style.mplstyle")
@@ -70,6 +70,28 @@ def save_anomaly_scores(path, dataset, scores):
     fig.write_image(path)
 
 
+def with_ensemble(audio, ensembles):
+    all_results = []
+    ds = CustomDS(audio)
+    stream = StreamGenerator(ds.data)
+    for x in stream.iter_item():
+        results = []
+        for detectors, calibrators, ensemble_calculator, _ in ensembles:
+            assert len(detectors) == len(calibrators)
+            calibrated_scores = []
+
+            for i in range(len(detectors)):
+                detector, calibrator = detectors[i], calibrators[i]
+                score = detector.fit_score(x)
+                calibrated_score = calibrator.normalize(score)
+                calibrated_scores.append(calibrated_score)
+
+            results.append(ensemble_calculator.ensemble(calibrated_scores))
+
+        all_results.append(results)
+    return np.array(all_results)
+
+
 def main():
 
     if not os.path.exists(RESULTS_PATH):
@@ -77,7 +99,22 @@ def main():
 
     audio = load_audio_data()
     peak_audio = extract_audio_peak_part(audio)
-    plot_audio(peak_audio)
+    ds = CustomDS(peak_audio)
+    # plot_audio(peak_audio)
+    ensembles = [
+        (
+            (RrcfDetector(), MadDetector()),
+            (ZScoreCalibrator(), ZScoreCalibrator()),
+            WeightEnsemble(ensemble_weights=[0.4, 0.6]),
+            "rrcf+mad_04_06",
+        ),
+        (
+            (RrcfDetector(), MadDetector()),
+            (ZScoreCalibrator(), ZScoreCalibrator()),
+            WeightEnsemble(ensemble_weights=[0.2, 0.8]),
+            "rrcf+mad_02_08",
+        ),
+    ]
 
     models = [
         SpotDetector(),
@@ -88,6 +125,13 @@ def main():
         RrcfDetector(),
         SRDetector(),
     ]
+
+    ensembled_results = with_ensemble(peak_audio, ensembles)
+    for i in range(len(ensembles)):
+        ensemble_scores = ensembled_results[:, i]
+        model_name = ensembles[i][-1]
+        ensemble_path = os.path.join(RESULTS_PATH, model_name + SAVE_FILE_FORMAT)
+        save_anomaly_scores(path=ensemble_path, dataset=ds, scores=ensemble_scores)
 
     for model in models:
         model_name = model.__class__.__name__
