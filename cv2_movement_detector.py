@@ -2,7 +2,7 @@ import cv2
 
 CONTOUR_THRESHOLD = 500
 cap = cv2.VideoCapture(
-    "../data/audio(wideo)/non_animal/D_non-contrast_1/D_non-contrast_1_processed/REC70.mp4"
+    "../data/audio(wideo)/non_animal/D_non-contrast_1/D_non-contrast_1_processed/REC69.mp4"
 )
 
 mog = cv2.createBackgroundSubtractorMOG2()
